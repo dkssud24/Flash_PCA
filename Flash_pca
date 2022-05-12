@@ -1,0 +1,234 @@
+
+
+http://eigen.tuxfamily.org/index.php?title=FAQ#Can_I_use_Eigen_with_Python.3F
+
+eigen 설치
+
+https://spectralib.org/download.html
+
+spectra 설치 & eigen 3.3.7설치
+
+file:///C:/Users/user/Downloads/srep13025.pdf
+
+pathway 논문
+
+
+https://www.gsea-msigdb.org/gsea/msigdb/genesets.jsp
+
+gene pathway 결합
+
+
+https://m.blog.naver.com/PostView.nhn?blogId=hancury&logNo=220335782458&proxyReferer=https:%2F%2Fwww.google.com%2F
+path 설정
+
+https://github.com/gabraham/flashpca
+
+
+
+
+
+
+
+
+**********************************************
+> library(flashpcaR)
+
+/usr/local/lib/R/site-library/flashpcaR/extdata
+
+> 위의 경로로 옮겨~ bedbimfam
+
+flashpca               package:flashpcaR               R Documentation
+
+Principal Component Analysis using FlashPCA
+
+Description:
+
+     Principal Component Analysis using FlashPCA
+
+Usage:
+
+     flashpca(
+       X,
+       ndim = 10,
+       stand = c("binom2", "binom", "sd", "center", "none"),
+       divisor = c("p", "n1", "none"),
+       maxiter = 100,
+       tol = 1e-04,
+       seed = 1,
+       block_size = 1000,
+       verbose = FALSE,
+       do_loadings = FALSE,
+       check_geno = TRUE,
+       return_scale = TRUE
+     )
+     
+Arguments:
+
+       X: A numeric matrix to perform PCA on, or a character string
+          pointing to a PLINK dataset.
+
+    ndim: Integer. How many dimensions to return in results.
+
+   stand: A character string indicating how to standardise X before
+          PCA, one of "binom" (old Eigenstrat-style), "binom2" (new
+          Eigenstrat-style), "sd" (zero-mean unit-variance), "center"
+          (zero mean), or "none".
+
+ divisor: A character string indicating whether to divide the
+          eigenvalues by number of columns of X ("p"), the number of
+          rows of X minus 1 ("n1") or none ("none").
+
+ maxiter: Integer. How many iterations to use in PCA.
+
+     tol: Numeric. Tolerance for determining PCA convergence.
+
+    seed: Integer. Seed for random number generator.
+
+block_size: Integer. Block size for PCA on PLINK files.
+
+ verbose: logical. More verbose output.
+
+do_loadings: Logical. Whether to compute loadings (matrix V from SVD).
+
+check_geno: Logical. Whether to explicitly check if the matrix X
+          contains values other than 0, 1, 2, when stand="binom". This
+          can be be set to FALSE if you are sure your matrix only
+          contains these values (only matters when using
+          stand="binom").
+
+
+
+return_scale: Logical. Whether to return the means and standard
+          deviations used in standardizing the matrix X.
+
+Details:
+
+     The default decomposition is of X X' / m, where m is the number of
+     SNPs (the denominator can be changed using the 'divisor'
+     argument).
+
+     The data is standardised by default. ??stand = "binom"?? uses the
+     old Eigensoft (Price 2006) formulation of
+
+                     p_j = sum_{i=1}^n X_{i,j} / (2 * n)                
+     
+                               mean_j = 2 * p                           
+     
+                          sd_j = sqrt(p * (1 - p)),                     
+     
+     where j is the index for the SNP and i is the index for the
+     sample.  Alternatively, `stand = "binom2"' uses the newer formula,
+     which is similar to the above except for
+
+                        sd_j = sqrt(2 * p * (1 - p)).                   
+     
+Value:
+
+     ??flashpca?? returns a list containing the following components:
+
+     values: a numeric vector. The eigenvalues of X X' / m.
+
+     vectors: a numeric matrix. The eigenvectors of X X' / m.
+
+     projection: a numeric matrix. Equivalent to X V.
+
+     loadings: a numeric matrix. The matrix of variable loadings, i.e.,
+          V from SVD.
+
+     scale: a list of two elements, ``center'' and ''scale'', which was
+          used to standardise the input matrix X.
+
+Examples:
+
+     set.seed(123)
+     
+     #######################
+     ## HapMap3 chr1 example
+     data(hm3.chr1)
+     ndim <- 10
+     X <- scale2(hm3.chr1$bed)
+     f1 <- flashpca(X, ndim=ndim, stand="none")
+     
+     # prcomp's is too slow for this example
+     r <- eigen(tcrossprod(X) / ncol(X), symmetric=TRUE)
+     
+     ## Compare eigenvalues
+     eval <- cbind(r$values[1:ndim], f1$values)
+     cor(eval)
+     mean((eval[,1] - eval[,2])^2)
+
+     where j is the index for the SNP and i is the index for the
+     sample.  Alternatively, `stand = "binom2"' uses the newer formula,
+     which is similar to the above except for
+
+                        sd_j = sqrt(2 * p * (1 - p)).                   
+     
+Value:
+
+     ??flashpca?? returns a list containing the following components:
+
+     values: a numeric vector. The eigenvalues of X X' / m.
+
+     vectors: a numeric matrix. The eigenvectors of X X' / m.
+
+     projection: a numeric matrix. Equivalent to X V.
+
+     loadings: a numeric matrix. The matrix of variable loadings, i.e.,
+          V from SVD.
+
+     scale: a list of two elements, ``center'' and ''scale'', which was
+          used to standardise the input matrix X.
+
+Examples:
+
+     set.seed(123)
+     
+     #######################
+     ## HapMap3 chr1 example
+     data(hm3.chr1)
+     ndim <- 10
+     X <- scale2(hm3.chr1$bed)
+     f1 <- flashpca(X, ndim=ndim, stand="none")
+     
+     # prcomp's is too slow for this example
+     r <- eigen(tcrossprod(X) / ncol(X), symmetric=TRUE)
+     
+     ## Compare eigenvalues
+     eval <- cbind(r$values[1:ndim], f1$values)
+     cor(eval)
+     mean((eval[,1] - eval[,2])^2)
+     
+     ## Compare eigenvectors
+     diag(cor(r$vectors[, 1:ndim], f1$vectors))
+     
+     ####################################
+     # HapMap3 chr1 example, PLINK format
+     
+     bedf <- gsub("\\.bed", "",
+        system.file("extdata", "data_chr1.bed", package="flashpcaR"))
+     
+     f2 <- flashpca(bedf, ndim=ndim) 
+     
+     eval <- cbind(r$values[1:ndim], f2$values)
+     cor(eval)
+     mean((eval[,1] - eval[,2])^2)
+     
+     ## Compare eigenvectors
+     diag(cor(r$vectors[, 1:ndim], f2$vectors))
+
+***********************
+나는 어떻게 했냐면
+1. flashpcaR을 실행시킴.
+> library(flashpcaR)
+
+
+2. bedfile의 경로를 바꿀 수 없으므로 아래와 같은 경로에 bed,bim,fam을 옮김.
+/usr/local/lib/R/site-library/flashpcaR/extdata/
+
+3.  이후 fn에 다음과 같이 설정함.
+> fn <- gsub("\\.bed", "",
++    system.file("extdata", "data_chr1.bed", package="flashpcaR"))
+
+4. 이게 flashpca실행시킨것임.
+f <- flashpca(fn, ndim=10)
+
